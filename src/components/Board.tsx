@@ -4,23 +4,29 @@ import { SquareType } from "../types";
 
 // const initialSquares = Array(9).fill(null);
 type BoardTypes = {
-	squares: SquareType[],
-	xIsNext: boolean,
-	onPlay: Function,
+  squares: SquareType[],
+  xIsNext: boolean,
+  onPlay: Function,
+  onDraw: Function,
 };
 
-function Board({squares, xIsNext, onPlay}:BoardTypes) {
+function Board({ squares, xIsNext, onPlay, onDraw }: BoardTypes) {
 
-  function handleClick(i:number) {
+  function handleClick(i: number) {
     const newSquares = [...squares];
-    if(calculateWinner(squares) || newSquares[i]) return;
+    if (calculateWinner(squares) || newSquares[i]) return;
     newSquares[i] = xIsNext ? 'x' : 'o';
+
+    if (!calculateWinner(newSquares) && newSquares.length === 9 && !newSquares.some(square => square === null)) {
+      return onDraw();
+    }
+
     calculateWinner(newSquares);
     onPlay(newSquares);
   }
 
   return (
-		<div className="flex flex-col bg-gray-950">
+    <div className="flex flex-col bg-gray-950">
       <div>
         <div className="flex border-t border-b border-gray-600">
           <Square onSquareClick={() => handleClick(0)} value={squares[0]} />
@@ -38,8 +44,8 @@ function Board({squares, xIsNext, onPlay}:BoardTypes) {
           <Square onSquareClick={() => handleClick(8)} value={squares[8]} />
         </div>
       </div>
-		</div>
-	);
+    </div>
+  );
 }
 
 export default Board;
